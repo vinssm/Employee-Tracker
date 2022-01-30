@@ -11,6 +11,9 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
+// Use apiRoutes
+app.use('/api', apiRoutes);
+
 // Start the prompt questions
 function init() {
     inquirer.prompt({
