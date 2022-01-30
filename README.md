@@ -33,3 +33,6 @@
     - setup the server and its port
     - npm start / npm server.js
 
+## Tests
+
+     - run npm test
