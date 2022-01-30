@@ -230,7 +230,8 @@ function updateEmployeeRole() {
             message: "Please enter the new role number id associated with the employee you want to update in the database."
         }
     ]).then(function (response) {
-        db.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [response.role_id, response.first_name], function (err, data) {
+        db.query("UPDATE employee SET role_id = ? WHERE first_name = ?", 
+        [response.role_id, response.first_name], function (err, data) {
             if (err) throw err;
             console.log('The new role entered has been added successfully to the database.');
 
@@ -260,7 +261,8 @@ function updateEmployeeManager() {
             message: "Please enter the new manager's id number associated with the employee you want to update in the database."
         }
     ]).then(function (response) {
-        db.query("UPDATE employee SET manager_id = ? WHERE first_name = ?", [response.manager_id, response.first_name], function (err, data) {
+        db.query("UPDATE employee SET manager_id = ? WHERE first_name = ?", 
+        [response.manager_id, response.first_name], function (err, data) {
             if (err) throw err;
             console.log("The new manager's id entered has been added successfully to the database.");
 
