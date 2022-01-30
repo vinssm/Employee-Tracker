@@ -10,18 +10,7 @@ const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
-// Default response for any other request (Not Found)
-app.use((req, res) => {
-  res.status(404).end();
-});
-
-// Start server after DB connection
-db.connect(err => {
-  if (err) throw err;
-  app.listen(PORT, () => {});
-});
-
-// Start the prompt functions
+// Start the prompt questions
 function init() {
     inquirer.prompt({
             type: 'list',
@@ -70,20 +59,20 @@ function init() {
     })
  };
 
-// View all departments
+// all departments
 function allDepart() {
     const sql = `SELECT * FROM department`;
-    db.query(sql, (err, res) => {
+    db.query(sql, (err, result) => {
         if (err) {
             res.status(500).json({ error: err.message })
             return;
         }
-        console.table(res);
+        console.table(result);
         init();
     });
 };
 
-// View all roles
+//  all roles
 function allRoles() {
     const sql = `SELECT * FROM role`;
     db.query(sql, (err, result) => {
@@ -96,7 +85,7 @@ function allRoles() {
     });
 };
 
-// View all employees
+//  all employees
 function allEmployees() {
     const sql = `SELECT employee.id,
                 employee.first_name,
@@ -361,3 +350,14 @@ function deleteEmployee() {
 init();
 
 
+// Default response for any other request (Not Found)
+app.use((req, res) => {
+    res.status(404).end();
+  });
+  
+  // Start server after DB connection
+  db.connect(err => {
+    if (err) throw err;
+    app.listen(PORT, () => {});
+  });
+  
