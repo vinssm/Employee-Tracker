@@ -1,7 +1,8 @@
 const express = require('express');
 const inquirer = require("inquirer");
-const Connection = require('mysql2/typings/mysql/lib/Connection');
+//const Connection = require('mysql2/typings/mysql/lib/Connection');
 const db = require('./db/connection');
+const apiRoutes = require('./routes/apiRoutes');
 
 
 const PORT = process.env.PORT || 3001;
