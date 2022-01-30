@@ -1,5 +1,6 @@
 const express = require('express');
 const inquirer = require("inquirer");
+const Connection = require('mysql2/typings/mysql/lib/Connection');
 const db = require('./db/connection');
 
 
@@ -55,6 +56,10 @@ function init() {
             case 'Delete Employee':
                 deleteEmployee();
                 break;
+            case 'EXIT':
+                console.log("Thank you!!!");
+                Connection.end();
+                break;
         }
     })
  };
@@ -62,12 +67,12 @@ function init() {
 // all departments
 function allDepart() {
     const sql = `SELECT * FROM department`;
-    db.query(sql, (err, result) => {
+    db.query(sql, (err, res) => {
         if (err) {
             res.status(500).json({ error: err.message })
             return;
         }
-        console.table(result);
+        console.table(res);
         init();
     });
 };
@@ -75,36 +80,36 @@ function allDepart() {
 //  all roles
 function allRoles() {
     const sql = `SELECT * FROM role`;
-    db.query(sql, (err, result) => {
+    db.query(sql, (err, res) => {
         if (err) {
             res.status(500).json({ error: err.message })
             return;
         }
-        console.table(result);
+        console.table(res);
         init();
     });
 };
 
 //  all employees
 function allEmployees() {
-    const sql = `SELECT employee.id,
-                employee.first_name,
-                employee.last_name,
-                role.title AS job_title,
-                department.department_name,
-                role.salary,
+    const sql = `SELECT employee.id, employee.first_name, employee.last_name,
+                role.title AS job_title, department.department_name, role.salary,
                 CONCAT(manager.first_name, ' ' ,manager.last_name) AS manager
                 FROM employee
                 LEFT JOIN role ON employee.role_id = role.id
                 LEFT JOIN department ON role.department_id = department.id
                 LEFT JOIN employee AS manager ON employee.manager_id = manager.id
                 ORDER By employee.id`;
-    db.query(sql, (err, result) => {
-        if (err) throw err;
-        console.table(result);
+
+    db.query(sql, (err, res) => {
+        if (err) {
+            throw err;
+        }
+        console.table(res);
         init();
     });
 };
+
 
 // Add departments
 function addDepartment() {
@@ -112,23 +117,23 @@ function addDepartment() {
         {
             name: "department_name",
             type: "input",
-            message: "Please enter the name of the department you want to add to the database."
+            message: "Please enter the name of the department."
         }
     ]).then((answer) => {
 
     const sql = `INSERT INTO department (department_name)
                 VALUES (?)`;
     const params = [answer.department_name];
-    db.query(sql, params, (err, result) => {
+    db.query(sql, params, (err, res) => {
     if (err) throw err;
-    console.log('The new department entered has been added successfully to the database.');
+    console.log('The new department is added successfully to the database.');
 
-        db.query(`SELECT * FROM department`, (err, result) => {
+        db.query(`SELECT * FROM department`, (err, res) => {
             if (err) {
                 res.status(500).json({ error: err.message })
                 return;
             }
-            console.table(result);
+            console.table(res);
             init();
         });
     });
@@ -146,7 +151,7 @@ function addRole() {
         {
             name: "salary",
             type: "input",
-            message: "Please enter the salary associated with the role you want to add to the database. (no dots, space or commas)"
+            message: "Please enter the salary associated with the role you want to add to the database."
         },
         {
             name: "department_id",
@@ -158,12 +163,12 @@ function addRole() {
             if (err) throw err;
             console.log('The new role entered has been added successfully to the database.');
 
-            db.query(`SELECT * FROM role`, (err, result) => {
+            db.query(`SELECT * FROM role`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
@@ -186,12 +191,12 @@ function addEmployee() {
         {
             name: "role_id",
             type: "number",
-            message: "Please enter the role id associated with the employee you want to add to the database. Enter ONLY numbers."
+            message: "Please enter the role id associated with the employee you want to add to the database."
         },
         {
             name: "manager_id",
             type: "number",
-            message: "Please enter the manager's id associated with the employee you want to add to the database. Enter ONLY numbers."
+            message: "Please enter the manager's id associated with the employee you want to add to the database."
         }
 
     ]).then(function (response) {
@@ -199,12 +204,12 @@ function addEmployee() {
             if (err) throw err;
             console.log('The new employee entered has been added successfully to the database.');
 
-            db.query(`SELECT * FROM employee`, (err, result) => {
+            db.query(`SELECT * FROM employee`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
@@ -222,19 +227,19 @@ function updateEmployeeRole() {
         {
             name: "role_id",
             type: "number",
-            message: "Please enter the new role number id associated with the employee you want to update in the database. Enter ONLY numbers."
+            message: "Please enter the new role number id associated with the employee you want to update in the database."
         }
     ]).then(function (response) {
         db.query("UPDATE employee SET role_id = ? WHERE first_name = ?", [response.role_id, response.first_name], function (err, data) {
             if (err) throw err;
             console.log('The new role entered has been added successfully to the database.');
 
-            db.query(`SELECT * FROM employee`, (err, result) => {
+            db.query(`SELECT * FROM employee`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
@@ -252,19 +257,19 @@ function updateEmployeeManager() {
         {
             name: "manager_id",
             type: "number",
-            message: "Please enter the new manager's id number associated with the employee you want to update in the database. Enter ONLY numbers."
+            message: "Please enter the new manager's id number associated with the employee you want to update in the database."
         }
     ]).then(function (response) {
         db.query("UPDATE employee SET manager_id = ? WHERE first_name = ?", [response.manager_id, response.first_name], function (err, data) {
             if (err) throw err;
             console.log("The new manager's id entered has been added successfully to the database.");
 
-            db.query(`SELECT * FROM employee`, (err, result) => {
+            db.query(`SELECT * FROM employee`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
@@ -277,19 +282,19 @@ function deleteDepartment() {
         {
             name: "department_id",
             type: "number",
-            message: "Please enter the id of the department you want to delete from the database. Enter ONLY numbers."
+            message: "Please enter the id of the department you want to delete from the database."
         }
     ]).then(function (response) {
         db.query("DELETE FROM department WHERE id = ?", [response.department_id], function (err, data) {
             if (err) throw err;
             console.log("The department entered has been deleted successfully from the database.");
 
-            db.query(`SELECT * FROM department`, (err, result) => {
+            db.query(`SELECT * FROM department`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
@@ -302,19 +307,19 @@ function deleteRole() {
         {
             name: "role_id",
             type: "number",
-            message: "Please enter the id of the role you want to delete from the database. Enter ONLY numbers."
+            message: "Please enter the id of the role you want to delete from the database."
         }
     ]).then(function (response) {
         db.query("DELETE FROM role WHERE id = ?", [response.role_id], function (err, data) {
             if (err) throw err;
             console.log("The role entered has been deleted successfully from the database.");
 
-            db.query(`SELECT * FROM role`, (err, result) => {
+            db.query(`SELECT * FROM role`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
@@ -327,19 +332,19 @@ function deleteEmployee() {
         {
             name: "employee_id",
             type: "number",
-            message: "Please enter the id of the employee you want to delete from the database. Enter ONLY numbers."
+            message: "Please enter the id of the employee you want to delete from the database."
         }
     ]).then(function (response) {
         db.query("DELETE FROM employee WHERE id = ?", [response.employee_id], function (err, data) {
             if (err) throw err;
             console.log("The employee entered has been deleted successfully from the database.");
 
-            db.query(`SELECT * FROM employee`, (err, result) => {
+            db.query(`SELECT * FROM employee`, (err, res) => {
                 if (err) {
                     res.status(500).json({ error: err.message })
                     init();
                 }
-                console.table(result);
+                console.table(res);
                 init();
             });
         })
