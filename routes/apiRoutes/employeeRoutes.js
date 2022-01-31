@@ -3,7 +3,9 @@ const router = express.Router();
 const db = require('../../db/connection');
 const inputCheck = require('../../utils/inputCheck');
 
-// Get all employee and their party affiliation
+
+
+// Get all employees
 router.get('/employee', (req, res) => {
                 const sql = `SELECT employee.id, employee.first_name, employee.last_name,
                 role.title AS job_title, department.department_name, role.salary,
@@ -23,7 +25,7 @@ router.get('/employee', (req, res) => {
         });
 
 
-// Get single employee with party affiliation
+// Get single employees
 router.get('/employee/:id', (req, res) => {
   const sql = `SELECT employee.id, employee.first_name, employee.last_name,
                 role.title AS job_title, department.department_name, role.salary,
@@ -61,6 +63,7 @@ router.post('/employee', ({ body }, res) => {
     return;
   }
 
+
   const sql = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?,?,?,?)`;
   const params = [
     body.first_name,
@@ -68,6 +71,7 @@ router.post('/employee', ({ body }, res) => {
     body.role_id,
     body.manager_id
   ];
+
 
   db.query(sql, params, (err, result) => {
     if (err) {
@@ -81,7 +85,8 @@ router.post('/employee', ({ body }, res) => {
   });
 });
 
-// Update a employee party
+
+// Update a employee
 router.put('/candidate/:id', (req, res) => {
   const errors = inputCheck(req.body, 'party_id');
   if (errors) {
@@ -110,7 +115,8 @@ router.put('/candidate/:id', (req, res) => {
   });
 });
 
-// Delete a candidate
+
+// Delete a employee
 router.delete('/employee/:id', (req, res) => {
   const sql = `DELETE FROM employee WHERE id = ?`;
 
@@ -130,5 +136,6 @@ router.delete('/employee/:id', (req, res) => {
     }
   });
 });
+
 
 module.exports = router;
