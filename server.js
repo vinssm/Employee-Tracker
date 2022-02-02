@@ -2,7 +2,7 @@ const express = require('express');
 const inquirer = require("inquirer");
 //const Connection = require('mysql2/typings/mysql/lib/Connection');
 const db = require('./db/connection');
-const apiRoutes = require('./routes/apiRoutes');
+//const apiRoutes = require('./routes/apiRoutes');
 
 
 const PORT = process.env.PORT || 3001;
@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 
 // Use apiRoutes
-app.use('/api', apiRoutes);
+//app.use('/api', apiRoutes);
 
 // Start the prompt questions
 function init() {
