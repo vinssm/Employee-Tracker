@@ -33,6 +33,12 @@
     - setup the server and its port
     - npm start / npm server.js
 
+## Dev Steps
+   - In the address bar of the project folder type cmd to open terminal and enter mysql -u root -p
+   - Enter Password to login to SQL shell
+   - Source the DB using source db/schema.sql
+   - Seed the DB using source db/seeds.sql
+
 ## Tests
 
      - run npm test
